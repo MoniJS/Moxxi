@@ -1,0 +1,24 @@
+{
+  "name": "moxi",
+  "version": "1.0.0",
+  "description": "FPS game using Three.js",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moni-js/Moxi.git"
+  },
+  "author": "MoniS10",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moni-js/Moxi/issues"
+  },
+  "homepage": "https://github.com/moni-js/Moxi#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0",
+    "three": "^0.103.0"
+  }
+}
