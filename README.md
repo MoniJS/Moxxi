@@ -1,2 +1,2 @@
 # Moxi
-A OpenSource FPS build with three.js and whs.js
+A OpenSource FPS build with three.js
