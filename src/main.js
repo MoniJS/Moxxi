@@ -3,7 +3,7 @@ import { createScene } from "/bootstrapBabylon.js";
 let canvas = document.getElementById("renderCanvas");
 let engine = new BABYLON.Engine(canvas, true);
 
-let scene = createScene();
+let scene = createScene(canvas, engine);
 
 engine.runRenderLoop(() => {
   scene.render(canvas, engine);
