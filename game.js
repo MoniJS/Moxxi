@@ -4,8 +4,8 @@ var world;
        var mass = 5;
        var lastTime;
        var camera, scene, renderer, controls;
-       var geometry, material, mesh, blue_color,  red_color, black_color, white_color, pink_color;
-       var container, camera, scene, renderer, cannonDebugRenderer;
+       var geometry, material, mesh, blue_color, red_color, black_color, white_color, pink_color;
+       var container, camera, scene, renderer; //cannonDebugRenderer;
        // To be synced
        var meshes = [];
        var bodies = [];
@@ -57,7 +57,7 @@ var world;
           container.appendChild( renderer.domElement );
           window.addEventListener( 'resize', onWindowResize, false );
           controls = new THREE.TrackballControls( camera, renderer.domElement );
-          cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
+          //cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
        }
        function onWindowResize() {
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -73,7 +73,7 @@ var world;
                world.step(timeStep, dt / 1000, maxSubSteps);
           }
           updateMeshPositions();
-          cannonDebugRenderer.update();
+          //cannonDebugRenderer.update();
           controls.update();
           renderer.render(scene, camera);
           lastTime = time;
@@ -155,7 +155,7 @@ var world;
           // Graphics
           var geo = new THREE.CylinderGeometry(1,1,1,20,20,false);
           var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color: 0x47689b,
+        color: blue_color,
         shading: THREE.FlatShading ,
         metalness: 0,
         roughness: 0.8
@@ -194,16 +194,4 @@ var world;
                    matrix[i].push(height);
                }
           }
-          var shape = new CANNON.Heightfield(matrix, { elementSize: 0.5 });
-          var quat = new CANNON.Quaternion(-0.5, 0, 0, 0.5);
-          quat.normalize();
-          body.addShape(shape, new CANNON.Vec3, quat);
-          body.position.set(6,1,0);
-          world.addBody(body);
-          bodies.push(body);
-          // Graphics: empty for now
-          var geo = new THREE.Geometry();
-          var mesh = new THREE.Mesh(geo, material);
-          meshes.push(mesh);
-          scene.add(mesh);
        }
