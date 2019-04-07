@@ -1,3 +1,4 @@
+
 // Create a scene which will hold all our meshes to be rendered
 var scene = new THREE.Scene();
 
@@ -22,7 +23,7 @@ var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
 
 // Set a near white clear color (default is black)
-renderer.setClearColor( 0xfff6e6 );
+renderer.setClearColor({color: 'rgb(11, 239, 209)'});
 
 // Enable shadow mapping
 renderer.shadowMap.enabled = true;
@@ -44,45 +45,66 @@ pointLight.shadow.mapSize.height = 1024;
 scene.add( pointLight );
 
 // A basic material that shows the geometry wireframe.
-var shadowMaterial = new THREE.ShadowMaterial( { color: 0xeeeeee } );
+var shadowMaterial = new THREE.ShadowMaterial( { color: 'rgb(0, 0, 0)' } );
 shadowMaterial.opacity = 0.5;
 var groundMesh = new THREE.Mesh(
     new THREE.BoxGeometry( 100, .1, 100 ),
-    shadowMaterial
+    new THREE.MeshStandardMaterial( {
+        color: 'rgb(26, 242, 112)',
+        flatShading: true,
+        metalness: 0,
+        roughness: 0.8
+    } )
+
 );
 groundMesh.receiveShadow = true;
 scene.add( groundMesh );
 
 // A simple geometric shape with a flat material
-var shapeOne = new THREE.Mesh(
+var octahedron_one = new THREE.Mesh(
     new THREE.OctahedronGeometry(10,1),
     new THREE.MeshStandardMaterial( {
         color: 0xff0051,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     } )
 );
-shapeOne.position.y += 10;
-shapeOne.rotateZ(Math.PI/3);
-shapeOne.castShadow = true;
-scene.add(shapeOne);
+octahedron_one.position.y += 10;
+octahedron_one.rotateZ(Math.PI/3);
+octahedron_one.castShadow = true;
+scene.add(octahedron_one);
 
 // Add a second shape
-var shapeTwo = new THREE.Mesh(
+var octahedron_two = new THREE.Mesh(
     new THREE.OctahedronGeometry(5,1),
     new THREE.MeshStandardMaterial({
         color: 0x47689b,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     })
 );
-shapeTwo.position.y += 5;
-shapeTwo.position.x += 15;
-shapeTwo.rotateZ(Math.PI/5);
-shapeTwo.castShadow = true;
-scene.add(shapeTwo);
+octahedron_two.position.y += 5;
+octahedron_two.position.x += 15;
+octahedron_two.rotateZ(Math.PI/5);
+octahedron_two.castShadow = true;
+scene.add(octahedron_two);
+//Sphere
+var sphere_one = new THREE.Mesh(
+    new THREE.SphereGeometry(5, 256, 256),
+    new THREE.MeshStandardMaterial({
+        color: 0x47689b,
+        flatShading: true,
+        metalness: 0,
+        roughness: 0.8
+    })    
+);
+sphere_one.position.y += 18;
+sphere_one.position.x += 18;
+sphere_one.rotateZ(Math.PI/5);
+sphere_one.castShadow = true;
+scene.add(sphere_one);
 
 // Render the scene/camera combnation
 renderer.render(scene, camera);
