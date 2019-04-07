@@ -1,117 +1,176 @@
-
-// Create a scene which will hold all our meshes to be rendered
-var scene = new THREE.Scene();
-
-// Create and position a camera
-var camera = new THREE.PerspectiveCamera(
-    60,                                   // Field of view
-    window.innerWidth/window.innerHeight, // Aspect ratio
-    0.1,                                  // Near clipping pane
-    1000                                  // Far clipping pane
-);
-
-// Reposition the camera
-camera.position.set(0,30,50);
-
-// Point the camera at a given coordinate
-camera.lookAt(new THREE.Vector3(0,15,0))
-
-// Create a renderer
-var renderer = new THREE.WebGLRenderer({ antialias: true });
-
-// Size should be the same as the window
-renderer.setSize( window.innerWidth, window.innerHeight );
-
-// Set a near white clear color (default is black)
-renderer.setClearColor({color: 'rgb(11, 239, 209)'});
-
-// Enable shadow mapping
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-// Append to the document
-document.body.appendChild( renderer.domElement );
-
-// Add an ambient lights
-var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
-scene.add( ambientLight );
-
-// Add a point light that will cast shadows
-var pointLight = new THREE.PointLight( 0xffffff, 1 );
-pointLight.position.set( 25, 50, 25 );
-pointLight.castShadow = true;
-pointLight.shadow.mapSize.width = 1024;
-pointLight.shadow.mapSize.height = 1024;
-scene.add( pointLight );
-
-// A basic material that shows the geometry wireframe.
-var shadowMaterial = new THREE.ShadowMaterial( { color: 'rgb(0, 0, 0)' } );
-shadowMaterial.opacity = 0.5;
-var groundMesh = new THREE.Mesh(
-    new THREE.BoxGeometry( 100, .1, 100 ),
-    new THREE.MeshStandardMaterial( {
-        color: 'rgb(26, 242, 112)',
-        flatShading: true,
-        metalness: 0,
-        roughness: 0.8
-    } )
-
-);
-groundMesh.receiveShadow = true;
-scene.add( groundMesh );
-
-// A simple geometric shape with a flat material
-var octahedron_one = new THREE.Mesh(
-    new THREE.OctahedronGeometry(10,1),
-    new THREE.MeshStandardMaterial( {
-        color: 0xff0051,
-        flatShading: true,
-        metalness: 0,
-        roughness: 0.8
-    } )
-);
-octahedron_one.position.y += 10;
-octahedron_one.rotateZ(Math.PI/3);
-octahedron_one.castShadow = true;
-scene.add(octahedron_one);
-
-// Add a second shape
-var octahedron_two = new THREE.Mesh(
-    new THREE.OctahedronGeometry(5,1),
-    new THREE.MeshStandardMaterial({
-        color: 0x47689b,
-        flatShading: true,
-        metalness: 0,
-        roughness: 0.8
-    })
-);
-octahedron_two.position.y += 5;
-octahedron_two.position.x += 15;
-octahedron_two.rotateZ(Math.PI/5);
-octahedron_two.castShadow = true;
-scene.add(octahedron_two);
-//Sphere
-var sphere_one = new THREE.Mesh(
-    new THREE.SphereGeometry(5, 256, 256),
-    new THREE.MeshStandardMaterial({
-        color: 0x47689b,
-        flatShading: true,
-        metalness: 0,
-        roughness: 0.8
-    })    
-);
-sphere_one.position.y += 18;
-sphere_one.position.x += 18;
-sphere_one.rotateZ(Math.PI/5);
-sphere_one.castShadow = true;
-scene.add(sphere_one);
-
-// Render the scene/camera combnation
-renderer.render(scene, camera);
-
-// Add an orbit control which allows us to move around the scene. See the three.js example for more details
-// https://github.com/mrdoob/three.js/blob/dev/examples/js/controls/OrbitControls.
-var controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.target = new THREE.Vector3(0,15,0);
-controls.maxPolarAngle = Math.PI / 2;
-controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+var world;
+       var fixedTimeStep = 1 / 60;
+       var maxSubSteps = 3;
+       var mass = 5;
+       var lastTime;
+       var camera, scene, renderer, controls;
+       var geometry, material, mesh;
+       var container, camera, scene, renderer, cannonDebugRenderer;
+       // To be synced
+       var meshes = [];
+       var bodies = [];
+       if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+       initCannon();
+       initThree();
+       addSphere();
+       addBox();
+       addCylinder();
+       addTrimesh();
+       addPlane();
+       addHeightfield();
+       animate();
+       function initThree() {
+          container = document.createElement( 'div' );
+          document.body.appendChild( container );
+          // scene
+          scene = new THREE.Scene();
+          scene.fog = new THREE.Fog( 0x000000, 500, 10000 );
+          // camera
+          camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
+          camera.position.set(0, 3, 20);
+          camera.up.set(0,1,0);
+          camera.lookAt(new THREE.Vector3(0,0,0));
+          scene.add(camera);
+          material = new THREE.MeshLambertMaterial( { color: 0x777777 } );
+          // lights
+          scene.add( new THREE.AmbientLight( 0x111111 ) );
+          var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
+          var d = 20;
+          light.position.set( 40, 20, 30 );
+          scene.add( light );
+          renderer = new THREE.WebGLRenderer( { antialias: true } );
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          renderer.setClearColor( scene.fog.color );
+          container.appendChild( renderer.domElement );
+          window.addEventListener( 'resize', onWindowResize, false );
+          controls = new THREE.TrackballControls( camera, renderer.domElement );
+          cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
+       }
+       function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          controls.screen.width = window.innerWidth;
+          controls.screen.height = window.innerHeight;
+       }
+       function animate(time) {
+          requestAnimationFrame( animate );
+          if(time && lastTime){
+               var dt = time - lastTime;
+               world.step(fixedTimeStep, dt / 1000, maxSubSteps);
+          }
+          updateMeshPositions();
+          cannonDebugRenderer.update();
+          controls.update();
+          renderer.render(scene, camera);
+          lastTime = time;
+       }
+       function updateMeshPositions(){
+          for(var i=0; i !== meshes.length; i++){
+               meshes[i].position.copy(bodies[i].position);
+               meshes[i].quaternion.copy(bodies[i].quaternion);
+          }
+       }
+       function initCannon(){
+          world = new CANNON.World();
+          world.gravity.set(0,-10,0);
+          world.broadphase = new CANNON.NaiveBroadphase();
+       }
+       function addPlane(){
+          // Physics
+          var shape = new CANNON.Plane();
+          var body = new CANNON.Body({ mass: 0 });
+          body.addShape(shape);
+          body.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics
+          geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
+          mesh = new THREE.Mesh( geometry, material );
+          mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI / 2);
+          scene.add(mesh);
+          meshes.push(mesh);
+       }
+       function addBox(){
+          // Physics
+          var shape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
+          var body = new CANNON.Body({ mass: mass });
+          body.addShape(shape);
+          body.position.set(1,5,0);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics
+          var cubeGeo = new THREE.BoxGeometry( 1, 1, 1, 10, 10 );
+          cubeMesh = new THREE.Mesh(cubeGeo, material);
+          meshes.push(cubeMesh);
+          scene.add(cubeMesh);
+       }
+       function addSphere(){
+          // Physics
+          var body = new CANNON.Body({ mass: mass });
+          var shape = new CANNON.Sphere(1);
+          body.addShape(shape);
+          body.position.set(-1,5,0);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics
+          var sphereGeo = new THREE.SphereGeometry(0.95, 20, 20);
+          sphereMesh = new THREE.Mesh(sphereGeo, material);
+          meshes.push(sphereMesh);
+          scene.add(sphereMesh);
+       }
+       function addCylinder(){
+          // Physics
+          var body = new CANNON.Body({ mass: mass });
+          var shape = new CANNON.Cylinder(1, 1, 1, 10);
+          var quat = new CANNON.Quaternion(0.5, 0, 0, 0.5);
+          quat.normalize();
+          body.addShape(shape, new CANNON.Vec3, quat);
+          body.position.set(-3,5,0);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics
+          var geo = new THREE.CylinderGeometry(1,1,1,20,20,false);
+          var mesh = new THREE.Mesh(geo, material);
+          meshes.push(mesh);
+          scene.add(mesh);
+       }
+       function addTrimesh(){
+          // Physics
+          var body = new CANNON.Body({ mass: mass });
+          var shape = new CANNON.Trimesh.createTorus(1, 0.3, 16, 16);
+          body.addShape(shape);
+          body.position.set(-6,5,0);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics
+          var geo = new THREE.TorusGeometry(1,0.3,16,100);
+          var mesh = new THREE.Mesh(geo, material);
+          meshes.push(mesh);
+          scene.add(mesh);
+       }
+       function addHeightfield(){
+          // Physics
+          var body = new CANNON.Body({ mass: 0 });
+          var matrix = [];
+          var sizeX = 20, sizeY = 20;
+          for (var i = 0; i < sizeX; i++) {
+               matrix.push([]);
+               for (var j = 0; j < sizeY; j++) {
+                   var height = Math.cos(i/sizeX * Math.PI * 2)*Math.cos(j/sizeY * Math.PI * 2);
+                   matrix[i].push(height);
+               }
+          }
+          var shape = new CANNON.Heightfield(matrix, { elementSize: 0.5 });
+          var quat = new CANNON.Quaternion(-0.5, 0, 0, 0.5);
+          quat.normalize();
+          body.addShape(shape, new CANNON.Vec3, quat);
+          body.position.set(6,1,0);
+          world.addBody(body);
+          bodies.push(body);
+          // Graphics: empty for now
+          var geo = new THREE.Geometry();
+          var mesh = new THREE.Mesh(geo, material);
+          meshes.push(mesh);
+          scene.add(mesh);
+       }
