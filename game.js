@@ -116,7 +116,7 @@ var world;
           var cubeGeo = new THREE.BoxGeometry( 1, 1, 1, 10, 10 );
           cubeMesh = new THREE.Mesh(cubeGeo, new THREE.MeshStandardMaterial( {
         color: 0xff0051,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     } ));
@@ -135,7 +135,7 @@ var world;
           var sphereGeo = new THREE.SphereGeometry(0.95, 256, 256);
           sphereMesh = new THREE.Mesh(sphereGeo, new THREE.MeshStandardMaterial({
         color: 0x47689b,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     }));
@@ -156,7 +156,7 @@ var world;
           var geo = new THREE.CylinderGeometry(1,1,1,20,20,false);
           var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
         color: blue_color,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     }));
@@ -175,7 +175,7 @@ var world;
           var geo = new THREE.TorusGeometry(1,0.3,16,100);
           var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
         color: blue_color,
-        shading: THREE.FlatShading ,
+        flatShading: true,
         metalness: 0,
         roughness: 0.8
     }));
