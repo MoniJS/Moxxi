@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "nodemon -e js,css,html index",
+    "dev-server": "webpack-dev-server --config webpack.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,9 +18,30 @@
     "url": "https://github.com/moni-js/Moxi/issues"
   },
   "homepage": "https://github.com/moni-js/Moxi#readme",
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": []
+  },
   "dependencies": {
     "express": "^4.16.4",
     "socket.io": "^2.2.0",
     "three": "^0.103.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.1",
+    "dart-sass": "^1.17.4",
+    "html-webpack-plugin": "^3.2.0",
+    "sass-loader": "^7.1.0",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.0",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
   }
 }

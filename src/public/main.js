@@ -1,4 +1,4 @@
-import { createScene } from "/bootstrapBabylon.js";
+import { createScene } from "/public/bootstrapBabylon.js";
 
 let canvas = document.getElementById("renderCanvas");
 let engine = new BABYLON.Engine(canvas, true);
