@@ -41,6 +41,9 @@ module.exports = {
     new VueLoaderPlugin()
   ],
   devServer: {
+    hot: true,
+    compress: false,
+    port: 8080,
     proxy: {
       "/public": "http://localhost:3000"
     }
