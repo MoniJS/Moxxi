@@ -1,10 +1,10 @@
 var world;
-       var fixedTimeStep = 1 / 60;
+       var timeStep = 1 / 60;
        var maxSubSteps = 3;
        var mass = 5;
        var lastTime;
        var camera, scene, renderer, controls;
-       var geometry, material, mesh;
+       var geometry, material, mesh, blue_color,  red_color, black_color, white_color, pink_color;
        var container, camera, scene, renderer, cannonDebugRenderer;
        // To be synced
        var meshes = [];
@@ -24,23 +24,36 @@ var world;
           document.body.appendChild( container );
           // scene
           scene = new THREE.Scene();
-          scene.fog = new THREE.Fog( 0x000000, 500, 10000 );
           // camera
           camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
           camera.position.set(0, 3, 20);
           camera.up.set(0,1,0);
           camera.lookAt(new THREE.Vector3(0,0,0));
           scene.add(camera);
-          material = new THREE.MeshLambertMaterial( { color: 0x777777 } );
+          material = new THREE.MeshStandardMaterial( { color: 'rgb(66, 244, 110)' } );
+          blue_color = new THREE.MeshStandardMaterial( { color: 'rgb(43, 82, 255)' } );
+          red_color = new THREE.MeshStandardMaterial( { color: 'rgb(247, 39, 60)' } );
+          pink_color = new THREE.MeshStandardMaterial( { color: 0xff0051 } );
+          black_color = new THREE.MeshStandardMaterial( { color: 'rgb(0, 0, 0)' } );
+          white_color = new THREE.MeshStandardMaterial( { color: 'rgb(255, 255, 255)' } );
           // lights
-          scene.add( new THREE.AmbientLight( 0x111111 ) );
+          var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
+          scene.add( ambientLight );
           var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
           var d = 20;
-          light.position.set( 40, 20, 30 );
-          scene.add( light );
+
+          var pointLight = new THREE.PointLight( 0xffffff, 1 );
+               pointLight.position.set( 25, 50, 25 );
+               pointLight.castShadow = true;
+               pointLight.shadow.mapSize.width = 1024;
+               pointLight.shadow.mapSize.height = 1024;
+               scene.add( pointLight );
+//Lights
           renderer = new THREE.WebGLRenderer( { antialias: true } );
           renderer.setSize( window.innerWidth, window.innerHeight );
-          renderer.setClearColor( scene.fog.color );
+          renderer.setClearColor( 0xfff6e6 );
+          renderer.shadowMap.enabled = true;
+          renderer.shadowMap.type = THREE.PCFSoftShadowMap;
           container.appendChild( renderer.domElement );
           window.addEventListener( 'resize', onWindowResize, false );
           controls = new THREE.TrackballControls( camera, renderer.domElement );
@@ -57,7 +70,7 @@ var world;
           requestAnimationFrame( animate );
           if(time && lastTime){
                var dt = time - lastTime;
-               world.step(fixedTimeStep, dt / 1000, maxSubSteps);
+               world.step(timeStep, dt / 1000, maxSubSteps);
           }
           updateMeshPositions();
           cannonDebugRenderer.update();
@@ -73,7 +86,7 @@ var world;
        }
        function initCannon(){
           world = new CANNON.World();
-          world.gravity.set(0,-10,0);
+          world.gravity.set(0, -10, 0);
           world.broadphase = new CANNON.NaiveBroadphase();
        }
        function addPlane(){
@@ -86,7 +99,7 @@ var world;
           bodies.push(body);
           // Graphics
           geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
-          mesh = new THREE.Mesh( geometry, material );
+          mesh = new THREE.Mesh( geometry, black_color );
           mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI / 2);
           scene.add(mesh);
           meshes.push(mesh);
@@ -101,7 +114,12 @@ var world;
           bodies.push(body);
           // Graphics
           var cubeGeo = new THREE.BoxGeometry( 1, 1, 1, 10, 10 );
-          cubeMesh = new THREE.Mesh(cubeGeo, material);
+          cubeMesh = new THREE.Mesh(cubeGeo, new THREE.MeshStandardMaterial( {
+        color: 0xff0051,
+        shading: THREE.FlatShading ,
+        metalness: 0,
+        roughness: 0.8
+    } ));
           meshes.push(cubeMesh);
           scene.add(cubeMesh);
        }
@@ -114,8 +132,13 @@ var world;
           world.addBody(body);
           bodies.push(body);
           // Graphics
-          var sphereGeo = new THREE.SphereGeometry(0.95, 20, 20);
-          sphereMesh = new THREE.Mesh(sphereGeo, material);
+          var sphereGeo = new THREE.SphereGeometry(0.95, 256, 256);
+          sphereMesh = new THREE.Mesh(sphereGeo, new THREE.MeshStandardMaterial({
+        color: 0x47689b,
+        shading: THREE.FlatShading ,
+        metalness: 0,
+        roughness: 0.8
+    }));
           meshes.push(sphereMesh);
           scene.add(sphereMesh);
        }
@@ -131,7 +154,12 @@ var world;
           bodies.push(body);
           // Graphics
           var geo = new THREE.CylinderGeometry(1,1,1,20,20,false);
-          var mesh = new THREE.Mesh(geo, material);
+          var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+        color: 0x47689b,
+        shading: THREE.FlatShading ,
+        metalness: 0,
+        roughness: 0.8
+    }));
           meshes.push(mesh);
           scene.add(mesh);
        }
@@ -145,7 +173,12 @@ var world;
           bodies.push(body);
           // Graphics
           var geo = new THREE.TorusGeometry(1,0.3,16,100);
-          var mesh = new THREE.Mesh(geo, material);
+          var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+        color: blue_color,
+        shading: THREE.FlatShading ,
+        metalness: 0,
+        roughness: 0.8
+    }));
           meshes.push(mesh);
           scene.add(mesh);
        }
