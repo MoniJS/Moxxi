@@ -4,6 +4,7 @@
   "description": "FPS game using Three.js",
   "main": "index.html",
   "scripts": {
+    "start": "nodemon -e js,css,html index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
