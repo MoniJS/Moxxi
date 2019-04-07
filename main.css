@@ -1,12 +1,7 @@
-html, body {
-     overflow: hidden;
-     width: 100%;
-     height: 100%;
+body {
      margin: 0;
-     padding: 0;
-}
-#renderCanvas {
+ }
+canvas {
      width: 100%;
-     height: 100%;
-     touch-action: none;
+     height: 100%
 }
