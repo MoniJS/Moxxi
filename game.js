@@ -40,6 +40,7 @@ var world;
           var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
           scene.add( ambientLight );
           var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
+          light.castShadow = true;   
           var d = 20;
 
           var pointLight = new THREE.PointLight( 0xffffff, 1 );
