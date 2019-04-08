@@ -40,16 +40,29 @@ var world;
           var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
           scene.add( ambientLight );
           var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
-          light.castShadow = true;   
+          light.castShadow = true;            // default false
+       scene.add( light );
+       //Set up shadow properties for the light
+       light.shadow.mapSize.width = 1024;  // default
+       light.shadow.mapSize.height = 1024; // default
+       light.shadow.camera.near = 0.5;    // default
+       light.shadow.camera.far = 500;     // default
+       this.setShadowSize=(sz)=>{
+       light.shadow.camera.left = sz;  // default
+       light.shadow.camera.bottom = sz; // default
+       light.shadow.camera.right = -sz;    // default
+       light.shadow.camera.top = -sz;
+ }
+        this.setShadowSize(100)
           var d = 20;
 
           var pointLight = new THREE.PointLight( 0xffffff, 1 );
-               pointLight.position.set( 25, 50, 25 );
+          pointLight.position.set( 25, 50, 25 );
                pointLight.castShadow = true;
                pointLight.shadow.mapSize.width = 1024;
                pointLight.shadow.mapSize.height = 1024;
                scene.add( pointLight );
-          shadowMaterial = new THREE.ShadowMaterial( { color: 0xeeeeee } );
+
 //Lights
           renderer = new THREE.WebGLRenderer( { antialias: true } );
           renderer.setSize( window.innerWidth, window.innerHeight );
@@ -118,14 +131,14 @@ var world;
        }
        function addBox(){
           // Physics
-          var shape = new CANNON.Box(new CANNON.Vec3(1.5,1.5,1.5));
+          var shape = new CANNON.Box(new CANNON.Vec3(2.5,2.5,2.5));
           var body = new CANNON.Body({ mass: mass });
           body.addShape(shape);
           body.position.set(1,18,0);
           world.addBody(body);
           bodies.push(body);
           // Graphics
-          var cubeGeo = new THREE.BoxGeometry( 3, 3, 3);
+          var cubeGeo = new THREE.BoxGeometry( 3, 3, 5);
           cubeMesh = new THREE.Mesh(cubeGeo, new THREE.MeshStandardMaterial( {
         color: 0xff0051,
         flatShading: true,
