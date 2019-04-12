@@ -1,11 +1,12 @@
 var world;
+// Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2
        var timeStep = 1 / 60;
        var maxSubSteps = 3;
        var mass = 5;
        var lastTime;
        var camera, scene, renderer, controls;
        var geometry, material, mesh, blue_color, red_color, black_color, white_color, pink_color;
-       var container, camera, scene, renderer; //cannonDebugRenderer;
+       var container, camera, scene, renderer, cannonDebugRenderer;
        // To be synced
        var meshes = [];
        var bodies = [];
@@ -39,12 +40,12 @@ var world;
           // lights
           var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
           scene.add( ambientLight );
-          var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
+          var light = new THREE.DirectionalLight( 0xffffff, 0.1 );
           light.castShadow = true;            // default false
        scene.add( light );
        //Set up shadow properties for the light
-       light.shadow.mapSize.width = 1024;  // default
-       light.shadow.mapSize.height = 1024; // default
+       light.shadow.mapSize.width = 512;  // default
+       light.shadow.mapSize.height = 512; // default
        light.shadow.camera.near = 0.5;    // default
        light.shadow.camera.far = 500;     // default
        this.setShadowSize=(sz)=>{
@@ -72,7 +73,7 @@ var world;
           document.body.appendChild( renderer.domElement );
           window.addEventListener( 'resize', onWindowResize, false );
           controls = new THREE.TrackballControls( camera, renderer.domElement );
-          //cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
+          cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
        }
        function onWindowResize() {
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -88,7 +89,7 @@ var world;
                world.step(timeStep, dt / 1000, maxSubSteps);
           }
           updateMeshPositions();
-          //cannonDebugRenderer.update();
+          cannonDebugRenderer.update();
           controls.update();
           renderer.render(scene, camera);
           lastTime = time;
@@ -113,7 +114,7 @@ var world;
           world.addBody(body);
           bodies.push(body);
           // Graphics
-          geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
+          geometry = new THREE.PlaneGeometry( 100, 100);
           //var shadow_color = new THREE.ShadowMaterial( { color: 'rgb(0, 0, 0)' } );
           //shadow_color.opacity = 1;
           var shadowMaterial = new THREE.ShadowMaterial( { color: 'rgb(28, 239, 169)' } );
@@ -125,13 +126,14 @@ var world;
         roughness: 0.8
     } ));
           mesh.receiveShadow = true;
-          mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI / 2);
+          mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);
+          mesh.position.set(0,3,0);
           scene.add(mesh);
           meshes.push(mesh);
        }
        function addBox(){
           // Physics
-          var shape = new CANNON.Box(new CANNON.Vec3(2.5,2.5,2.5));
+          var shape = new CANNON.Box(new CANNON.Vec3(1.5,1.5,2.5));
           var body = new CANNON.Body({ mass: mass });
           body.addShape(shape);
           body.position.set(1,18,0);
@@ -145,6 +147,7 @@ var world;
         metalness: 0,
         roughness: 0.8
     } ));
+          cubeMesh.castShadow = true;
           meshes.push(cubeMesh);
           scene.add(cubeMesh);
        }
@@ -164,6 +167,7 @@ var world;
         metalness: 0,
         roughness: 0.8
     }));
+          sphereMesh.castShadow = true;
           meshes.push(sphereMesh);
           scene.add(sphereMesh);
        }
@@ -185,6 +189,7 @@ var world;
         metalness: 0,
         roughness: 0.8
     }));
+    mesh.castShadow = true;
           meshes.push(mesh);
           scene.add(mesh);
        }
