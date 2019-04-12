@@ -1,5 +1,5 @@
 var world;
-// Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2
+// Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2 
        var timeStep = 1 / 60;
        var maxSubSteps = 3;
        var mass = 5;
