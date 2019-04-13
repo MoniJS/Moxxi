@@ -6,7 +6,8 @@ var world;
        var lastTime;
        var camera, scene, renderer, controls;
        var geometry, material, mesh, blue_color, red_color, black_color, white_color, pink_color;
-       var container, camera, scene, renderer, cannonDebugRenderer;
+       var container, camera, scene, renderer, cannonDebugRenderer, clock;
+
        // To be synced
        var meshes = [];
        var bodies = [];
@@ -25,6 +26,7 @@ var world;
           //document.body.appendChild( container );
           // scene
           scene = new THREE.Scene();
+          clock = new THREE.Clock();
           // camera
           camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1000 );
           camera.position.set(0, 3, 20);
@@ -168,6 +170,7 @@ var world;
         roughness: 0.8
     }));
           sphereMesh.castShadow = true;
+          sphereMesh.name = 'sphere';
           meshes.push(sphereMesh);
           scene.add(sphereMesh);
        }
