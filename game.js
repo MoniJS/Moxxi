@@ -2,7 +2,7 @@ var world;
 // Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2
        var timeStep = 1 / 60;
        var maxSubSteps = 3;
-       var mass =  5;
+       var mass = 5;
        var lastTime;
        var camera, scene, renderer, controls;
        var geometry, material, mesh, blue_color, red_color, black_color, white_color, pink_color;
