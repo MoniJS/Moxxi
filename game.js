@@ -1,5 +1,5 @@
 var world;
-// Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2 
+// Note Cannon.js => Three.js Box Size Conversion is Three.Vec3/2
        var timeStep = 1 / 60;
        var maxSubSteps = 3;
        var mass = 5;
@@ -154,13 +154,13 @@ var world;
        function addSphere(){
           // Physics
           var body = new CANNON.Body({ mass: mass });
-          var shape = new CANNON.Sphere(1);
+          var shape = new CANNON.Sphere(1.5);
           body.addShape(shape);
-          body.position.set(-1,5,0);
+          body.position.set(8,5,0);
           world.addBody(body);
           bodies.push(body);
           // Graphics
-          var sphereGeo = new THREE.SphereGeometry(0.95, 256, 256);
+          var sphereGeo = new THREE.SphereGeometry(1.45, 256, 256);
           sphereMesh = new THREE.Mesh(sphereGeo, new THREE.MeshStandardMaterial({
         color: 0x47689b,
         flatShading: true,
