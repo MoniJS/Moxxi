@@ -1,2 +1,2 @@
 # Moxxi
-A OpenSource FPS build with three.js
+A OpenSource FPS build with Unity-3D.
