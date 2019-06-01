@@ -10,9 +10,7 @@
     "webpack"
   ],
   "scripts": {
-    "start": "webpack-dev-server --mode development",
-    "prebuild": "rimraf ./build && mkdir ./build",
-    "build": "webpack --mode production"
+    "test": "mocha --reporter list"
   },
   "dependencies": {
     "three": "^0.104.0",
