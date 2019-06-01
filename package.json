@@ -11,12 +11,14 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development",
+    "test": "mocha --reporter list",
     "prebuild": "rimraf ./build && mkdir ./build",
     "build": "webpack --mode production"
   },
   "dependencies": {
     "three": "^0.104.0",
     "three-obj-loader": "^1.1.3",
+    "mocha": "^6.1.4",
     "webpack-cli": "^3.3.2"
   },
   "devDependencies": {
