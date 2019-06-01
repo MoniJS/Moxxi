@@ -11,7 +11,6 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "test": "mocha --reporter list",
     "prebuild": "rimraf ./build && mkdir ./build",
     "build": "webpack --mode production"
   },
