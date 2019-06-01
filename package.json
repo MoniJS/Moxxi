@@ -10,12 +10,15 @@
     "webpack"
   ],
   "scripts": {
-    "test": "mocha --reporter list"
+    "test": "mocha --reporter list",
+    "start": "http-server . -p 8000"
   },
   "dependencies": {
+    "express": "^4.17.1",
+    "http-server": "^0.11.1",
+    "mocha": "^6.1.4",
     "three": "^0.104.0",
     "three-obj-loader": "^1.1.3",
-    "mocha": "^6.1.4",
     "webpack-cli": "^3.3.2"
   },
   "devDependencies": {
