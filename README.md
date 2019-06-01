@@ -1,2 +1,2 @@
 # Moxxi
-A OpenSource FPS build with BabylonJS
+A OpenSource FPS build with ThreeJS
