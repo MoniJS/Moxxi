@@ -1,78 +1,24 @@
-const app = new WHS.App([
-  new WHS.ElementModule({
-    container: document.getElementById('app')
-  }),
-  new WHS.SceneModule(),
-  new WHS.CameraModule({
-    position: {
-      y: 10,
-      z: 50
-    }
-  }),
-  new WHS.RenderingModule({
-    bgColor: 0x162129,
+var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
-    renderer: {
-      antialias: true,
-      shadowmap: {
-        type: THREE.PCFSoftShadowMap
-      }
-    }
-  }, {shadow: true}),
-  new WHS.OrbitControlsModule(),
-  new WHS.ResizeModule()
-]);
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
 
-// Sphere
-const sphere = new WHS.Sphere({ // Create sphere comonent.
-  geometry: {
-    radius: 5,
-    widthSegments: 32,
-    heightSegments: 32
-  },
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			var cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
 
-  material: new THREE.MeshPhongMaterial({
-    color: 0xF2F2F2
-  }),
+			camera.position.z = 5;
 
-  position: new THREE.Vector3(0, 5, 0)
-});
+			var animate = function () {
+				requestAnimationFrame( animate );
 
-sphere.addTo(app);
+				cube.rotation.x += 0.01;
+				cube.rotation.y += 0.01;
 
-// Plane
-new WHS.Plane({
-  geometry: {
-    width: 100,
-    height: 100
-  },
+				renderer.render( scene, camera );
+			};
 
-  material: new THREE.MeshPhongMaterial({color: 0x447F8B}),
-
-  rotation: {
-    x: -Math.PI / 2
-  }
-}).addTo(app);
-
-// Lights
-new WHS.PointLight({
-  light: {
-    intensity: 0.5,
-    distance: 100
-  },
-
-  shadow: {
-    fov: 90
-  },
-
-  position: new THREE.Vector3(0, 10, 10)
-}).addTo(app);
-
-new WHS.AmbientLight({
-  light: {
-    intensity: 0.4
-  }
-}).addTo(app);
-
-// Start the app
-app.start();
+			animate();
