@@ -56,19 +56,19 @@ The player can:
 
 **TARGET PLATFORM**
 
-> Chrome 49+
-> Firefox 54+
-> Safari 10.1+
-> Edge 14+
-> Opera 15.2+
-> Really Any Desktop Browser That Supports WebGL
+1. Chrome 49+
+ 2. Firefox 54+
+3.  Safari 10.1+
+4. Edge 14+
+5. Opera 15.2+
+6. Really Any Desktop Browser That Supports WebGL
 
 **SYSTEM REQUIREMENTS**
 
 > Here is a rought idea of what you need to run this game at a enjoyable level (45 Frame Per Seconds or Higher) :
->  A Mouse and Keyboard
->  2.0 Ghz Processor
-> 4GB Ram or higher
-> Graphics Accelerator that supports WebGL
-> A stable Broadband Connection or WiFi
-> A WebGL and WebSockets compatible browser 
+-  A Mouse and Keyboard
+-  2.0 Ghz Processor
+- 4GB Ram or higher
+- Graphics Accelerator that supports WebGL
+- A stable Broadband Connection or WiFi
+- A WebGL and WebSockets compatible browser 
