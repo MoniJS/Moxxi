@@ -1,18 +1,20 @@
-var app = require('express')();
+var path = require('path');
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var state = {
+app.use(express.static(path.join(__dirname, '../client')));
 
-};
+app.use('/modules',express.static(path.join(__dirname, '../../node_modules/three/src')));
 
+app.get('/', (request, response)=>{
+    console.log(request.url);
+    response.sendFile(path.join(__dirname, '../client', 'index.html'));
+});
 
 io.on('connection', (socket)=>{
-
-    //connect socket to room they want to join
-    socket.on('room', (room)=>{
-        socket.join(room);
-    });
+    
 
 });
 
