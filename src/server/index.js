@@ -3,9 +3,11 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var THREE = require('three');
+ 
 var state = {
-    players: []
+    stage: 'assets/main.json',
+    players: {}
 };
 
 app.use(express.static(path.join(__dirname, '../client')));
@@ -18,11 +20,33 @@ app.get('/', (request, response)=>{
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected:', socket.id);
+
+    //spawn new player 
+    state.players[socket.id] = {
+        position: new THREE.Vector3(0 , 0 , 0),
+    };
+    //set new player data
+    socket.emit('init_client', state);
+
+    //update player
+    socket.on('update_player', function(player){
+        state.players[socket.id] = player;
+    });
+
+    //new player
+    socket.broadcast.emit('new_player', socket.id);
+
+    //disconnect player
     socket.on('disconnect', function() {
-      console.log('user disconnected');
+        console.log('user disconnected');
+        delete state.players[socket.id];
     });
 });
+
+//emit game state
+setInterval(() => {
+    io.sockets.emit('update', state);
+}, 1000 / 60);
 
 
 http.listen(3000, function(){
