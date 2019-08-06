@@ -35,6 +35,8 @@ var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 var characters = [];
 for (let index = 0; index < 5; index++) {
     characters.push(new THREE.Mesh( geometry, material ));
+    characters[index].visible = false;
+    scene.add(characters[index]);
 }
 
 //init physics variables
@@ -45,7 +47,7 @@ world.broadphase = new CANNON.NaiveBroadphase();
 var groundMaterial = new CANNON.Material("groundMaterial");
 // Adjust constraint equation parameters for ground/ground contact
 var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial, groundMaterial, {
-    friction: 2,
+    friction: 100,
     restitution: 0.3,
     contactEquationStiffness: 1e8,
     contactEquationRelaxation: 3,
@@ -111,7 +113,6 @@ socket.on('init_client', function(data){
                 body.addShape(shape);
                 
                 world.addBody(body);
-                console.log(body);
             }
         });
     });
@@ -129,7 +130,7 @@ socket.on('update', function(data){
 setInterval(() => {
     socket.emit('update_player', player);
 }, 1000/60);
-/*
+
 //Pointer lock function
 function pointerLock(){
     document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
@@ -155,7 +156,7 @@ renderer.domElement.addEventListener('click', function(){
     pointerLock();
     isPointerLock = isPointerLock ? false : true;
 });
-*/
+
 //window resize function
 window.addEventListener( 'resize', onWindowResize, false );
 function onWindowResize(){
@@ -168,38 +169,142 @@ function onWindowResize(){
 var timeStep = 1.0 / 60.0; // seconds
 function physics(){
     world.step(timeStep);
+    playerBody.velocity = velocity;
     //set player position
     player.position.x = playerBody.position.x;
     player.position.y = playerBody.position.y;
     player.position.z = playerBody.position.z;
-    //set camera position
+    
     //camera.position.y = player.position.y;
     cube.position.x = player.position.x;
     cube.position.y = player.position.y;
     cube.position.z = player.position.z;
 }
-//controls
+//create camera controls
+var left = false;
+var right = false;
+var foward = false;
+var backwards = false;
+var velocity = new CANNON.Vec3(0, 0, 0);
+
+function setVelocity(){
+    velocity.set(0, 0, 0);
+    var foward_vec = camera.getWorldDirection();
+    var right_vec = new THREE.Vector3(0, 0, 0);
+    right_vec.crossVectors(foward_vec, camera.up);
+    if(foward){
+        velocity.x += foward_vec.x*5;
+        //velocity.y += foward_vec.y*50;
+        velocity.z += foward_vec.z*5;
+    }
+    if(backwards){
+        velocity.x -= foward_vec.x*5;
+        //velocity.y -= foward_vec.y*50;
+        velocity.z -= foward_vec.z*5;
+    }
+    if(right){
+        velocity.x += right_vec.x*5;
+        //velocity.y += right_vec.y*50;
+        velocity.z += right_vec.z*5;
+    }
+    if(left){
+        velocity.x -= right_vec.x*5;
+        //velocity.y -= right_vec.y*50;
+        velocity.z -= right_vec.z*5;
+    }
+}
+
 document.addEventListener('keydown', function(event){
     if(event.key == 'w'){
-        playerBody.velocity.x = 1;
+        foward = true;
     }
     if(event.key == 's'){
-        playerBody.velocity.x = -1;
+        backwards = true;
     }
-    if(event.key == 'a'){
-        playerBody.velocity.z = -1;
+    if(event.key == 'a'){   
+        left = true;
     }
     if(event.key == 'd'){
-        playerBody.velocity.z = 1;
+        right = true;
     }
+    if(event.keyCode == 32){
+        playerBody.applyLocalForce(new CANNON.Vec3(0, 100, 0),new CANNON.Vec3(0, 0, 0));
+    }
+    console.log(event.key);
+    setVelocity();
     
 });
+
+document.addEventListener('keyup', function(event){
+    if(event.key == 'w'){
+        foward = false;
+    }
+    if(event.key == 's'){
+        backwards = false;
+    }
+    if(event.key == 'a'){
+        left = false;
+    }
+    if(event.key == 'd'){
+        right = false;
+    }
+    setVelocity();
+    
+});
+var pitch = 0;
+var yaw = 0;
+var front = camera.getWorldDirection();
+    front.sub(camera.getWorldPosition());
+    front.x = Math.cos(pitch) * Math.cos(yaw);
+    front.y = Math.sin(pitch);
+    front.z = Math.cos(pitch) * Math.sin(yaw);
+    front.add(camera.getWorldPosition());
+    camera.lookAt(front);
+
+document.addEventListener('mousemove', function(event){
+    pitch -= event.movementY*.001;
+    yaw -= -event.movementX*.001;
+
+    front = camera.getWorldDirection();
+    front.sub(camera.getWorldPosition());
+    front.x = Math.cos(pitch) * Math.cos(yaw);
+    front.y = Math.sin(pitch);
+    front.z = Math.cos(pitch) * Math.sin(yaw);
+    front.add(camera.getWorldPosition());
+    camera.lookAt(front);
+});
+
+function update_camera(){
+    //set camera position
+    camera.position.x = player.position.x;
+    camera.position.y = player.position.y;
+    camera.position.z = player.position.z;
+    //console.log(playerBody.velocity);
+}
+
 var cannonDebugRenderer = new THREE.CannonDebugRenderer( scene, world );
+
+//set character model data
+function set_characters(){
+    var inc = 0;
+    for(var i in state.players){
+        if(i != socket.id){
+            characters[inc].visible = true;
+            characters[inc].position.x = state.players[i].position.x;
+            characters[inc].position.z = state.players[i].position.z;          
+            characters[inc].position.y = state.players[i].position.y;
+
+        }
+        inc++;
+    }
+}
 
 //render function
 function render() {
     requestAnimationFrame( render );
     physics();
+    update_camera();
+    set_characters();
     //cannonDebugRenderer.update();
     renderer.render( scene, camera );
 }
